@@ -241,6 +241,40 @@
 
     // Inicjalizacja
     updateChart();
+    <script>
+async function saveToGitHub() {
+    const distances = JSON.stringify(distancesArray); // Twoja tablica z danymi
+
+    const response = await fetch('https://api.github.com/repos/TWOJ_LOGIN/TWOJE_REPO/actions/workflows/update-distances.yml/dispatches', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer TWÓJ_TOKEN',
+            'Accept': 'application/vnd.github.v3+json'
+        },
+        body: JSON.stringify({
+            ref: 'main', // lub inna nazwa gałęzi
+            inputs: {
+                distances: distances
+            }
+        })
+    });
+
+    if (response.ok) {
+        alert('Dane zapisane na GitHubie!');
+    } else {
+        console.error('Błąd zapisu:', await response.text());
+    }
+}
+async function loadFromGitHub() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/TWOJ_LOGIN/TWOJE_REPO/main/distances.json');
+        distancesArray = await response.json();
+        console.log('Dane załadowane:', distancesArray);
+        updateChart(); // Odświeżenie wykresu po załadowaniu danych
+    } catch (error) {
+        console.error('Błąd wczytywania danych:', error);
+    }
+}
   </script>
 </body>
 </html>
