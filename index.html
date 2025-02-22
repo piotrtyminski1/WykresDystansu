@@ -244,30 +244,27 @@ async function fetchData() {
 
 // Funkcja do zapisywania danych do pliku data.json na GitHubie
 async function saveToGitHub() {
-  const token = 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; // Musisz wygenerować token dostępowy na GitHubie
-  const url = `https://api.github.com/repos/piotrtyminski1/WykresDystansu/contents/data.json`;
-  const response = await fetch(url);
-  const fileData = await response.json();
-  const content = btoa(JSON.stringify(distances));
-  const sha = fileData.sha;
-
-  const updateResponse = await fetch(url, {
-    method: 'PUT',
+  const url = `https://api.github.com/repos/piotrtyminski1/WykresDystansu/dispatches`;
+  
+  const response = await fetch(url, {
+    method: "POST",
     headers: {
-      'Authorization': `token ${token}`,
-      'Content-Type': 'application/json'
+      "Authorization": `Bearer YOUR_TOKEN_HERE`, // Tylko do testów, usuń potem!
+      "Accept": "application/vnd.github.v3+json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      message: 'Update data.json',
-      content: content,
-      sha: sha
+      event_type: "update-data",
+      client_payload: {
+        data: JSON.stringify(distances)
+      }
     })
   });
 
-  if (updateResponse.ok) {
-    console.log('Data saved to GitHub');
+  if (response.ok) {
+    console.log("Data successfully sent to GitHub Actions!");
   } else {
-    console.error('Failed to save data to GitHub');
+    console.error("Failed to trigger GitHub Action:", await response.text());
   }
 }
 
