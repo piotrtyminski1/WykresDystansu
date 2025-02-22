@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#452b4e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,8 +19,6 @@
     html, body {
       margin: 0;
       padding: 0;
-        overflow: hidden; /* Zablokuj przewijanie */
-  height: 100%; /* Ustal wysokość na 100% */
     }
     body {
       font-family: 'Roboto', sans-serif;
@@ -30,9 +30,6 @@
       color: white;
       /* Ogólny padding dla zawartości strony */
       padding: 20px;
-       overflow-y: auto; /* Pozwól na przewijanie tylko w obrębie body */
-  -webkit-overflow-scrolling: touch; /* Płynne przewijanie na urządzeniach dotykowych */
-}
     }
 
     /* Sekcja wprowadzania dystansu */
@@ -189,11 +186,11 @@
         const options = { day: 'numeric', month: 'long' };
         const formattedDate = new Date().toLocaleDateString('pl-PL', options);
 
-        // Dodajemy nowy rekord
         distances.push({ value, date: formattedDate });
-        input.value = '';
-        updateChart();
-        saveToLocalStorage();
+input.value = '';
+updateChart();
+saveToLocalStorage();
+saveToFirebase();  // Dodaj to, by zapisać do Firebase
       }
     }
 
@@ -234,60 +231,33 @@
       }
     }
 
-// Funkcja do pobierania danych z pliku data.json na GitHubie
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7JqE7bNPU6FHqJSad5lKwjm-c8ozY9rg",
+  authDomain: "bieganie-f4ada.firebaseapp.com",
+  databaseURL: "https://bieganie-f4ada-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "bieganie-f4ada",
+  storageBucket: "bieganie-f4ada.firebasestorage.app",
+  messagingSenderId: "798631807038",
+  appId: "1:798631807038:web:fe21df42faead2b981696f",
+  measurementId: "G-12G3WT98CD"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+async function saveToFirebase() {
+  db.ref("distances").set(distances);
+  console.log("Dane zapisane do Firebase!");
+}
+
 async function fetchData() {
-  const response = await fetch('https://raw.githubusercontent.com/piotrtyminski1/WykresDystansu/main/data.json');
-  const data = await response.json();
-  distances = data;
-  updateChart();
-}
-
-// Funkcja do zapisywania danych do pliku data.json na GitHubie
-async function saveToGitHub() {
-  const url = `https://api.github.com/repos/piotrtyminski1/WykresDystansu/dispatches`;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Accept": "application/vnd.github.v3+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      event_type: "update-data",
-      client_payload: {
-        data: JSON.stringify(distances)
-      }
-    })
-  });
-
-  if (response.ok) {
-    console.log("Data successfully sent to GitHub Actions!");
-  } else {
-    console.error("Failed to trigger GitHub Action:", await response.text());
-  }
-}
-
-// Zmodyfikuj funkcję addDistance i removeDistance, aby używały saveToGitHub zamiast saveToLocalStorage
-function addDistance() {
-  const input = document.getElementById('distanceInput');
-  const value = parseFloat(input.value);
-  if (!isNaN(value) && value > 0) {
-    const options = { day: 'numeric', month: 'long' };
-    const formattedDate = new Date().toLocaleDateString('pl-PL', options);
-    distances.push({ value, date: formattedDate });
-    input.value = '';
+  db.ref("distances").once("value", (snapshot) => {
+    distances = snapshot.val() || [];
     updateChart();
-    saveToGitHub();
-  }
+  });
 }
 
-function removeDistance(index) {
-  distances.splice(index, 1);
-  updateChart();
-  saveToGitHub();
-}
-
-// Inicjalizacja
 fetchData();
 
   </script>
