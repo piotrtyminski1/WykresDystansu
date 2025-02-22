@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wykres Dystansu z Firebase</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#452b4e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon.png">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wykres Dystansu</title>
+  
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
   <!-- Czcionka Roboto -->
   <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK (wersja 8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  
   <style>
     /* Reset marginesów HTML i BODY */
     html, body {
@@ -101,8 +105,11 @@
   </table>
 
   <script>
-    // Konfiguracja Firebase
-    const firebaseConfig = {
+    // ============================
+    // KONFIGURACJA FIREBASE
+    // ============================
+    // Skopiuj poniższą konfigurację ze swojego projektu Firebase.
+    var firebaseConfig = {
       apiKey: "AIzaSyA7JqE7bNPU6FHqJSad5lKwjm-c8ozY9rg",
   authDomain: "bieganie-f4ada.firebaseapp.com",
   databaseURL: "https://bieganie-f4ada-default-rtdb.europe-west1.firebasedatabase.app",
@@ -110,19 +117,18 @@
   storageBucket: "bieganie-f4ada.firebasestorage.app",
   messagingSenderId: "798631807038",
   appId: "1:798631807038:web:fe21df42faead2b981696f",
-  measurementId: "G-12G3WT98CD"
     };
-
-    // Inicjalizacja Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Wczytanie z localStorage (lub pustej tablicy)
-    let distances = JSON.parse(localStorage.getItem('distances') || '[]');
+    firebase.initializeApp(firebaseConfig);
+    
+    // ============================
+    // GLOBALNE ZMIENNE I KONFIGURACJA WYKRESU
+    // ============================
+    let distances = [];  // Tablica na dane pobrane z Firebase
 
     const canvas = document.getElementById('distanceChart');
     const ctx = canvas.getContext('2d');
 
+    // Gradient linii wykresu
     let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, '#ffc777');
     gradient.addColorStop(0.5, '#f53c68');
@@ -131,9 +137,9 @@
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: distances.map((_, i) => i + 1),
+        labels: [], // Etykiety będą numerami wpisów (1, 2, 3, …)
         datasets: [{
-          data: distances.map(d => d.value),
+          data: [],
           fill: false,
           borderColor: gradient,
           borderWidth: 2,
@@ -143,12 +149,8 @@
       options: {
         scales: {
           x: {
-            grid: {
-              display: false
-            },
-            ticks: {
-              color: '#897abb'
-            }
+            grid: { display: false },
+            ticks: { color: '#897abb' }
           },
           y: {
             beginAtZero: true,
@@ -156,76 +158,66 @@
               color: context => {
                 const baseRGB = '137,122,187';
                 const y = context.tick.value / context.chart.scales.y.max;
-                const alpha = (1 - y).toFixed(2);
+                const alpha = (1 - y).toFixed(2); 
                 return `rgba(${baseRGB}, ${alpha})`;
               }
             },
-            ticks: {
-              color: '#897abb'
-            }
+            ticks: { color: '#897abb' }
           }
         },
-        plugins: {
-          legend: {
-            display: false
-          }
-        }
+        plugins: { legend: { display: false } }
       }
     });
 
-    // Funkcja zapisująca dane do Firebase
-    async function saveToFirebase() {
-      try {
-        await db.collection('distances').doc('userDistances').set({
-          distances: distances
+    // ============================
+    // OPERACJE NA DANYCH W FIREBASE
+    // ============================
+
+    // Zapis nowego wpisu do Firebase
+    function saveToFirebase(entry) {
+      firebase.database().ref('distances').push(entry);
+    }
+
+    // Ładowanie danych z Firebase – nasłuchujemy zmian w bazie
+    function loadFromFirebase() {
+      firebase.database().ref('distances').on('value', function(snapshot) {
+        distances = [];
+        snapshot.forEach(function(childSnapshot) {
+          let entry = childSnapshot.val();
+          entry.id = childSnapshot.key; // zapisujemy klucz, aby móc później usuwać
+          distances.push(entry);
         });
-        console.log('Dane zapisane do Firebase');
-      } catch (error) {
-        console.error('Błąd zapisu do Firebase:', error);
+        updateChart();
+      });
+    }
+
+    // Usuwanie wpisu z Firebase
+    function removeDistance(index) {
+      let entry = distances[index];
+      if (entry && entry.id) {
+        firebase.database().ref('distances/' + entry.id).remove();
       }
     }
 
-    // Funkcja odczytująca dane z Firebase
-    async function loadFromFirebase() {
-      try {
-        const doc = await db.collection('distances').doc('userDistances').get();
-        if (doc.exists) {
-          distances = doc.data().distances;
-          updateChart();
-          console.log('Dane wczytane z Firebase');
-        } else {
-          console.log('Brak danych w Firebase');
-        }
-      } catch (error) {
-        console.error('Błąd odczytu z Firebase:', error);
-      }
-    }
-
-    // Dodawanie dystansu
+    // ============================
+    // FUNKCJE INTERFEJSU UŻYTKOWNIKA
+    // ============================
+    
+    // Dodawanie nowego dystansu (przycisk "Dodaj")
     function addDistance() {
       const input = document.getElementById('distanceInput');
       const value = parseFloat(input.value);
       if (!isNaN(value) && value > 0) {
+        // Formatowanie daty, np. "1 stycznia"
         const options = { day: 'numeric', month: 'long' };
         const formattedDate = new Date().toLocaleDateString('pl-PL', options);
-
-        distances.push({ value, date: formattedDate });
+        let newEntry = { value: value, date: formattedDate };
         input.value = '';
-        updateChart();
-        saveToLocalStorage();
-        saveToFirebase();
+        saveToFirebase(newEntry);
       }
     }
 
-    // Usuwanie dystansu
-    function removeDistance(index) {
-      distances.splice(index, 1);
-      updateChart();
-      saveToLocalStorage();
-      saveToFirebase();
-    }
-
-    // Aktualizacja wykresu i tabeli
+    // Aktualizacja wykresu i tabeli na podstawie danych z Firebase
     function updateChart() {
       chart.data.labels = distances.map((_, i) => i + 1);
       chart.data.datasets[0].data = distances.map(d => d.value);
@@ -233,10 +225,10 @@
       updateTable();
     }
 
+    // Aktualizacja tabeli wyników – najnowsze wpisy na górze
     function updateTable() {
       const tableBody = document.getElementById('distanceTable');
       tableBody.innerHTML = '';
-
       for (let i = distances.length - 1; i >= 0; i--) {
         const distance = distances[i];
         const rowNumber = distances.length - i;
@@ -251,12 +243,7 @@
       }
     }
 
-    // Zapisywanie do localStorage
-    function saveToLocalStorage() {
-      localStorage.setItem('distances', JSON.stringify(distances));
-    }
-
-    // Wczytaj dane z Firebase przy starcie
+    // Inicjujemy ładowanie danych z Firebase przy starcie aplikacji
     loadFromFirebase();
   </script>
 </body>
