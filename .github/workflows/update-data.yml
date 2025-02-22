@@ -1,0 +1,26 @@
+name: Update data.json
+
+on:
+  workflow_dispatch: # Ręczne uruchomienie
+  repository_dispatch: # Możesz też triggerować z webhooka
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Update data.json
+        run: |
+          echo '${{ github.event.client_payload.data }}' > data.json
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Update data.json"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
