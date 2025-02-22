@@ -17,6 +17,9 @@
     html, body {
       margin: 0;
       padding: 0;
+      overflow: hidden; /* Zablokuj przewijanie */
+      height: 100%; /* Ustal wysokość na 100% */
+}
     }
     body {
       font-family: 'Roboto', sans-serif;
@@ -28,6 +31,8 @@
       color: white;
       /* Ogólny padding dla zawartości strony */
       padding: 20px;
+       overflow-y: auto; /* Pozwól na przewijanie tylko w obrębie body */
+  -webkit-overflow-scrolling: touch; /* Płynne przewijanie na urządzeniach dotykowych */
     }
 
     /* Sekcja wprowadzania dystansu */
