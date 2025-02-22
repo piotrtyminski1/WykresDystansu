@@ -1,28 +1,26 @@
-name: Update distances
+name: Update Distances
 
 on:
   workflow_dispatch:
     inputs:
       distances:
-        description: 'New distances data as JSON'
+        description: 'Tablica dystansów'
         required: true
+        type: string
 
 jobs:
-  update-file:
+  update-distances:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-    - name: Update distances.json
-      run: echo "${{ github.event.inputs.distances }}" > distances.json
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
-        git add distances.json
-        git commit -m 'Update distances.json'
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Parse and update distances
+        run: |
+          echo "${{ github.event.inputs.distances }}" > distances.json
+          git config --global user.email "pi.tyminski@gmail.com"
+          git config --global user.name "piotrtyminski1"
+          git add distances.json
+          git commit -m "Update distances"
+          git push
