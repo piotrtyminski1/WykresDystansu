@@ -14,6 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Czcionka Roboto -->
   <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=BenchNine:wght@300&display=swap" rel="stylesheet">
   
   <!-- Firebase SDK (wersja 8) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -24,28 +25,177 @@
     html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      text-transform: uppercase;
     }
+
     body {
       font-family: 'Roboto', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(180deg, #452b4e, #181935) no-repeat;
+      background: linear-gradient(180deg, #255992, #1e174d) no-repeat;
       background-size: cover;
       color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
     }
-    .input-section {
-      text-align: center;
-      margin-bottom: 30px;
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px;
     }
+
+    .input-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .chart-container {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
     .chart-section {
       text-align: center;
-      margin-bottom: 30px;
+      width: 100%;
     }
+
     .chart-section canvas {
       display: block;
       margin: 0 auto;
       max-width: 100%;
+      width: 100%;
+      height: auto;
     }
+
+    .info-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .info-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: left; /* Justowanie do środka */
+      gap: 10px;
+      font-family: 'BenchNine', sans-serif; /* Ta sama czcionka co w wykresie kołowym */
+    }
+
+    .info-row {
+      display: flex;
+      flex-direction: column;
+      align-items: left; /* Justowanie do środka */
+      text-align: left;
+    }
+
+    .info-label {
+      color: #76deff;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px; /* Odstęp między etykietą a wartością */
+    }
+
+    .info-value {
+      color: white;
+      font-weight: regular;
+      font-size: 30px; /* Większa czcionka dla wartości */
+    }
+
+    .progress-chart-container {
+      width: 250px; /* Zmniejszona szerokość wykresu kołowego */
+      position: relative;
+    }
+
+    .table-container {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 10px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    td {
+      padding: 0px 5px;
+      color: #76deff;
+      border: none;
+      line-height: 2.2;
+      text-align: left;
+      position: relative;
+    }
+
+    .delete-button {
+      background: none;
+      border: none;
+      color: #e43a78;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .positive {
+      color: #80f7ff;
+    }
+
+    .negative {
+      color: #e43a78;
+    }
+
+    .table-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: #5ebee8;
+      border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #8ddcff;
+    }
+
     input[type="number"] {
       margin: 5px;
       padding: 8px;
@@ -55,143 +205,324 @@
       background-color: white;
       color: black;
     }
+
     button {
       margin: 5px;
       padding: 8px 16px;
       font-size: 16px;
       font-family: 'Roboto', sans-serif;
-      background-color: #ee155a;
+      background-color: #80f7ff;
       color: white;
       border: none;
       border-radius: 50px;
       cursor: pointer;
     }
-    table {
-      margin: 0 auto;
-      width: 100%;
-      border-collapse: collapse;
+
+    .golden-text {
+      text-shadow: 0 0 15px #80f7ff8c; /* Efekt glow dla najlepszego wyniku */
     }
-    td {
-      padding: 2px 5px;
-      color: #897abb;
-      border: none;
-      line-height: 1.2;
-      text-align: center;
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
-    .delete-button {
-      background: none;
-      border: none;
-      color: #ee155a;
-      font-size: 20px;
-      cursor: pointer;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(5px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .slide-up {
+      animation: slideUp 0.5s ease-in-out;
     }
   </style>
 </head>
 <body>
-  <!-- Sekcja wprowadzania dystansu -->
-  <div class="input-section">
-    <input type="number" id="distanceInput" placeholder="Dodaj dystans (km)" step="0.1" />
-    <button onclick="addDistance()">Dodaj</button>
+  <div class="input-container fade-in">
+    <!-- Ikonka -->
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    <dotlottie-player src="https://lottie.host/2c8b3da2-6325-4148-863d-a4538573e854/LEZ07ASwiT.lottie" background="transparent" speed="1" style="width: 150px; height: 150px" loop autoplay></dotlottie-player>      
+    
+    <!-- Sekcja wprowadzania dystansu -->
+    <div class="input-section">
+      <input type="number" id="distanceInput" placeholder="Dodaj dystans (km)" step="0.1" />
+      <button onclick="addDistance()">Dodaj</button>
+    </div>
   </div>
 
-  <!-- Sekcja wykresu -->
-  <div class="chart-section">
-    <canvas id="distanceChart" width="400" height="200"></canvas>
-  </div>
+  <!-- Kontener na wykres i tabelę -->
+  <div class="container">
+    <div class="chart-container slide-up">
+      <div class="chart-section">
+        <canvas id="distanceChart" width="400" height="200"></canvas>
+      </div>
+      <div class="info-container">
+        <div class="info-box">
+          <div class="info-row">
+            <div class="info-label">Najdłuższy dystans</div>
+            <div class="info-value" id="longestDistance">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Data</div>
+            <div class="info-value" id="longestDistanceDate">-</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Ostatni dystans</div>
+            <div class="info-value" id="lastDistance">-</div>
+          </div>
+        </div>
+        <div class="progress-chart-container">
+          <canvas id="progressChart" width="150" height="150"></canvas> <!-- Zmniejszona wysokość wykresu kołowego -->
+        </div>
+      </div>
+    </div>
 
-  <!-- Tabela wyników -->
-  <table>
-    <tbody id="distanceTable"></tbody>
-  </table>
+    <div class="table-container slide-up">
+      <div class="table-section">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="distanceTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <script>
     // ============================
     // KONFIGURACJA FIREBASE
     // ============================
-    // Skopiuj poniższą konfigurację ze swojego projektu Firebase.
     var firebaseConfig = {
       apiKey: "AIzaSyA7JqE7bNPU6FHqJSad5lKwjm-c8ozY9rg",
-  authDomain: "bieganie-f4ada.firebaseapp.com",
-  databaseURL: "https://bieganie-f4ada-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "bieganie-f4ada",
-  storageBucket: "bieganie-f4ada.firebasestorage.app",
-  messagingSenderId: "798631807038",
-  appId: "1:798631807038:web:fe21df42faead2b981696f",
+      authDomain: "bieganie-f4ada.firebaseapp.com",
+      databaseURL: "https://bieganie-f4ada-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "bieganie-f4ada",
+      storageBucket: "bieganie-f4ada.appspot.com",
+      messagingSenderId: "798631807038",
+      appId: "1:798631807038:web:fe21df42faead2b981696f",
     };
     firebase.initializeApp(firebaseConfig);
-    
+
     // ============================
     // GLOBALNE ZMIENNE I KONFIGURACJA WYKRESU
     // ============================
-    let distances = [];  // Tablica na dane pobrane z Firebase
+    let distances = []; // Tablica na dane pobrane z Firebase
 
     const canvas = document.getElementById('distanceChart');
     const ctx = canvas.getContext('2d');
 
     // Gradient linii wykresu
     let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#ffc777');
-    gradient.addColorStop(0.5, '#f53c68');
-    gradient.addColorStop(1, '#4700c8');
+    gradient.addColorStop(0.4, '#6cd6fe');
+    gradient.addColorStop(0.7, '#e43a78');
+    gradient.addColorStop(0.8, '#e43a78');
 
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: [], // Etykiety będą numerami wpisów (1, 2, 3, …)
-        datasets: [{
-          data: [],
-          fill: false,
-          borderColor: gradient,
-          borderWidth: 2,
-          tension: 0.1
-        }]
+        datasets: [
+          {
+            label: 'Dystans (km)',
+            data: [],
+            fill: false,
+            borderColor: gradient,
+            borderWidth: 2,
+            tension: 0.3,
+          },
+        ],
       },
       options: {
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: '#897abb' }
+            ticks: { color: '#897abb' },
           },
           y: {
-            beginAtZero: true,
             grid: {
-              color: context => {
+              color: (context) => {
                 const baseRGB = '137,122,187';
-                const y = context.tick.value / context.chart.scales.y.max;
-                const alpha = (1 - y).toFixed(2); 
+                const values = context.chart.data.datasets[0].data;
+                const minValue = Math.min(...values); // Minimalna wartość na wykresie
+                const maxValue = Math.max(...values); // Maksymalna wartość na wykresie
+                const y = (context.tick.value - minValue) / (maxValue - minValue); // Normalizacja wartości do zakresu 0-1
+                const alpha = (1 - y).toFixed(2); // Odwrócenie gradientu (100% na dole, 0% na górze)
                 return `rgba(${baseRGB}, ${alpha})`;
-              }
+              },
             },
-            ticks: { color: '#897abb' }
-          }
+            ticks: { color: '#897abb' },
+            min: (ctx) => {
+              const values = ctx.chart.data.datasets[0].data;
+              return Math.min(...values); // Ustawienie minimalnej wartości na najniższy rekord
+            },
+            max: (ctx) => {
+              const values = ctx.chart.data.datasets[0].data;
+              return Math.max(...values); // Ustawienie maksymalnej wartości na najwyższy rekord
+            },
+          },
         },
-        plugins: { legend: { display: false } }
-      }
+        plugins: {
+          legend: {
+            display: false, // Usunięcie legendy
+          },
+        },
+      },
     });
+
+    // Wykres kołowy
+    const progressCanvas = document.getElementById('progressChart');
+    const progressCtx = progressCanvas.getContext('2d');
+
+    let glowAlpha = 0;
+    let glowDirection = 1; // 1 - zwiększanie, -1 - zmniejszanie
+    const glowSpeed = 0.01; // Szybkość pulsowania
+    const maxGlowAlpha = 0.8; // Maksymalna wartość alpha
+
+    const glowEffectPlugin = {
+      id: 'glowEffect',
+      beforeDatasetsDraw: (chart) => {
+        const ctx = chart.ctx;
+        const dataset = chart.data.datasets[0];
+        const meta = chart.getDatasetMeta(0);
+        
+        if (!meta || !meta.data.length) return;
+        
+        const element = meta.data[0]; // Pierwszy segment ("Wykonano")
+
+        ctx.save();
+        ctx.shadowColor = dataset.backgroundColor[0]; // Kolor glow taki jak segmentu
+        ctx.shadowBlur = 10; // Intensywność efektu
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.globalAlpha = glowAlpha; // Ustawienie aktualnej wartości alpha
+        ctx.globalCompositeOperation = 'soft-light'; // Łagodniejszy efekt mieszania
+        
+        // Zewnętrzny glow (nie nachodzi na linię)
+        ctx.beginPath();
+        ctx.arc(element.x, element.y, element.outerRadius, element.startAngle, element.endAngle);
+        ctx.arc(element.x, element.y, element.innerRadius, element.endAngle, element.startAngle, true);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      }
+    };
+
+    const progressChart = new Chart(progressCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Wykonano', 'Pozostało'],
+        datasets: [
+          {
+            data: [0, 100], // Początkowa wartość
+            backgroundColor: ['#80f7ff', 'rgba(137, 122, 187, 0.2)'],
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        layout: {
+          padding: 10, // Zwiększenie marginesu, aby cień nie był ucinany
+        },
+        cutout: '98%',
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: false,
+          },
+          animation: {
+            animateRotate: true,
+            animateScale: true,
+          },
+        },
+      },
+      plugins: [
+        glowEffectPlugin,
+        {
+          id: 'centerText',
+          beforeDraw: (chart) => {
+            const width = chart.width;
+            const height = chart.height;
+            const ctx = chart.ctx;
+            ctx.restore();
+
+            const progress = chart.data.datasets[0].data[0];
+            const text = `${progress.toFixed(1)}%`;
+            ctx.font = 'bold 44px "BenchNine", sans-serif';
+            ctx.fillStyle = '#8ddcff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, height / 2);
+
+            ctx.save();
+          },
+        },
+      ],
+    });
+
+    // Funkcja do animacji pulsowania
+    function animateGlow() {
+      glowAlpha += glowDirection * glowSpeed;
+
+      if (glowAlpha >= maxGlowAlpha || glowAlpha <= 0) {
+        glowDirection *= -1; // Zmiana kierunku pulsowania
+      }
+
+      progressChart.update(); // Aktualizacja wykresu
+      requestAnimationFrame(animateGlow); // Zapętlenie animacji
+    }
+
+    // Rozpoczęcie animacji
+    animateGlow();
 
     // ============================
     // OPERACJE NA DANYCH W FIREBASE
     // ============================
 
-    // Zapis nowego wpisu do Firebase
     function saveToFirebase(entry) {
       firebase.database().ref('distances').push(entry);
     }
 
-    // Ładowanie danych z Firebase – nasłuchujemy zmian w bazie
     function loadFromFirebase() {
-      firebase.database().ref('distances').on('value', function(snapshot) {
+      firebase.database().ref('distances').on('value', function (snapshot) {
         distances = [];
-        snapshot.forEach(function(childSnapshot) {
+        snapshot.forEach(function (childSnapshot) {
           let entry = childSnapshot.val();
-          entry.id = childSnapshot.key; // zapisujemy klucz, aby móc później usuwać
+          entry.id = childSnapshot.key;
           distances.push(entry);
         });
+
+        distances.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
         updateChart();
+        updateInfo();
+        updateProgressChart();
+        updateTable();
       });
     }
 
-    // Usuwanie wpisu z Firebase
     function removeDistance(index) {
       let entry = distances[index];
       if (entry && entry.id) {
@@ -200,50 +531,93 @@
     }
 
     // ============================
+    // FUNKCJE POMOCNICZE
+    // ============================
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp); // Tworzymy obiekt Date z timestamp
+      const options = { day: 'numeric', month: 'long' };
+      return date.toLocaleDateString('pl-PL', options); // Formatowanie daty
+    }
+
+    function calculateProgress(distance) {
+      const minDistance = 3.5;
+      const maxDistance = 5.25;
+      return ((distance - minDistance) / (maxDistance - minDistance)) * 100;
+    }
+
+    // ============================
     // FUNKCJE INTERFEJSU UŻYTKOWNIKA
     // ============================
-    
-    // Dodawanie nowego dystansu (przycisk "Dodaj")
+
     function addDistance() {
       const input = document.getElementById('distanceInput');
       const value = parseFloat(input.value);
       if (!isNaN(value) && value > 0) {
-        // Formatowanie daty, np. "1 stycznia"
-        const options = { day: 'numeric', month: 'long' };
-        const formattedDate = new Date().toLocaleDateString('pl-PL', options);
-        let newEntry = { value: value, date: formattedDate };
+        const timestamp = new Date().getTime();
+        let newEntry = {
+          value: value,
+          timestamp: timestamp,
+        };
         input.value = '';
         saveToFirebase(newEntry);
       }
     }
 
-    // Aktualizacja wykresu i tabeli na podstawie danych z Firebase
     function updateChart() {
+      const values = distances.map((d) => d.value);
       chart.data.labels = distances.map((_, i) => i + 1);
-      chart.data.datasets[0].data = distances.map(d => d.value);
+      chart.data.datasets[0].data = values;
       chart.update();
-      updateTable();
     }
 
-    // Aktualizacja tabeli wyników – najnowsze wpisy na górze
     function updateTable() {
       const tableBody = document.getElementById('distanceTable');
       tableBody.innerHTML = '';
+
+      // Znajdź rekordowy dystans
+      const longestDistanceEntry = distances.reduce((prev, current) => (prev.value > current.value) ? prev : current, { value: 0 });
+
       for (let i = distances.length - 1; i >= 0; i--) {
         const distance = distances[i];
-        const rowNumber = distances.length - i;
+        const formattedDate = formatDate(distance.timestamp);
+        const difference = i > 0 ? (distances[i].value - distances[i - 1].value).toFixed(2) : '-';
+        const progress = calculateProgress(distance.value).toFixed(2) + '%';
+
+        // Sprawdź, czy to rekordowy dystans
+        const isRecord = distance.value === longestDistanceEntry.value;
+
         tableBody.innerHTML += `
-          <tr>
-            <td>${rowNumber}</td>
-            <td>${distance.date}</td>
-            <td>${distance.value} km</td>
+          <tr class="slide-up ${isRecord ? 'golden-text' : ''}">
+            <td>${i + 1}</td>
+            <td>${formattedDate}</td>
+            <td>${distance.value.toFixed(2)} km</td>
+            <td class="${difference > 0 ? 'positive' : 'negative'}">${difference} km</td>
+            <td>${progress}</td>
             <td><button class="delete-button" onclick="removeDistance(${i})">✕</button></td>
           </tr>
         `;
       }
     }
 
-    // Inicjujemy ładowanie danych z Firebase przy starcie aplikacji
+    function updateProgressChart() {
+      const lastDistance = distances.length > 0 ? distances[distances.length - 1].value : 0;
+      const progress = calculateProgress(lastDistance);
+      const remaining = 100 - progress;
+
+      progressChart.data.datasets[0].data = [progress, remaining];
+      progressChart.update();
+    }
+
+    function updateInfo() {
+      const longestDistanceEntry = distances.reduce((prev, current) => (prev.value > current.value) ? prev : current, { value: 0 });
+      const lastDistanceEntry = distances.length > 0 ? distances[distances.length - 1] : null;
+
+      document.getElementById('longestDistance').textContent = longestDistanceEntry.value.toFixed(2) + ' km';
+      document.getElementById('longestDistanceDate').textContent = formatDate(longestDistanceEntry.timestamp);
+      document.getElementById('lastDistance').textContent = lastDistanceEntry ? lastDistanceEntry.value.toFixed(2) + ' km' : '-';
+    }
+
     loadFromFirebase();
   </script>
 </body>
