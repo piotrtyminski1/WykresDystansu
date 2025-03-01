@@ -22,11 +22,10 @@
   
   <style>
   /* Reset marginesów HTML i BODY */
-html, body {
+  html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  text-transform: uppercase;
   overflow: hidden; /* Zapobiega przewijaniu poza granice strony */
 }
 
@@ -37,6 +36,7 @@ body {
   background: linear-gradient(180deg, #255992, #1e174d) no-repeat;
   background-size: cover;
   background-attachment: fixed;
+  color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -68,6 +68,8 @@ body::after {
   background: #1e174d; /* Kolor dolnej części gradientu */
   z-index: -1; /* Upewnij się, że jest pod zawartością */
 }
+
+
 
 .input-container {
   display: flex;
@@ -101,6 +103,10 @@ dotlottie-player {
   gap: 20px;
   width: 100%;
   max-width: 800px;
+  overflow-y: auto; /* Włącz przewijanie tylko wewnątrz kontenera */
+  height: calc(100vh - 40px); /* Dostosuj wysokość do widocznego obszaru */
+  padding: 0px; /* Dodaj padding, aby zawartość nie dotykała krawędzi */
+  box-sizing: border-box;
 }
 
 .chart-container {
