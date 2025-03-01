@@ -21,234 +21,277 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   
   <style>
-    /* Reset marginesów HTML i BODY */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      text-transform: uppercase;
-    }
+  /* Reset marginesów HTML i BODY */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  text-transform: uppercase;
+}
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #255992, #1e174d) no-repeat;
-      background-size: cover;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
+body {
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #255992, #1e174d) no-repeat;
+  background-size: cover;
+  background-attachment: fixed; /* Tło pozostaje w miejscu podczas scrollowania */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
 
-    .input-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 20px;
-    }
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Wyśrodkowanie zawartości */
+  gap: 10px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+}
 
-    .input-section {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+/* Kontener dla animacji Lottie */
+dotlottie-player {
+  width: 150px; /* Stała szerokość */
+  height: 150px; /* Stała wysokość */
+  flex-shrink: 0; /* Zapobiega zmniejszaniu się */
+  margin: -20px -30px;
+}
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-      max-width: 800px;
-    }
+.input-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto; /* Szerokość dopasowana do zawartości */
+  flex-shrink: 0; /* Zapobiega zmniejszaniu się */
+}
 
-    .chart-container {
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0);
-      border-radius: 10px;
-      padding: 10px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+}
 
-    .chart-section {
-      text-align: center;
-      width: 100%;
-    }
+.chart-container {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.007); /* Białe tło z przezroczystością 3% */
+  border-radius: 20px; /* Zaokrąglone rogi */
+  padding: 20px; /* Dodaj padding, aby zawartość nie dotykała krawędzi */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-    .chart-section canvas {
-      display: block;
-      margin: 0 auto;
-      max-width: 100%;
-      width: 100%;
-      height: auto;
-    }
+.chart-section {
+  text-align: center;
+  width: 100%;
+}
 
-    .info-container {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0);
-      border-radius: 10px;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+.chart-section canvas {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
 
-    .info-box {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: left; /* Justowanie do środka */
-      gap: 10px;
-      font-family: 'BenchNine', sans-serif; /* Ta sama czcionka co w wykresie kołowym */
-    }
+.info-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.007); /* Białe tło z przezroczystością 3% */
+  border-radius: 20px; /* Zaokrąglone rogi */
+  padding: 20px; /* Dodaj padding, aby zawartość nie dotykała krawędzi */
+  box-sizing: border-box;
+  position: relative;
+}
 
-    .info-row {
-      display: flex;
-      flex-direction: column;
-      align-items: left; /* Justowanie do środka */
-      text-align: left;
-    }
+.info-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: left; /* Justowanie do środka */
+  gap: 10px;
+  font-family: 'BenchNine', sans-serif; /* Ta sama czcionka co w wykresie kołowym */
+}
 
-    .info-label {
-      color: #76deff;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 5px; /* Odstęp między etykietą a wartością */
-    }
+.info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: left; /* Justowanie do środka */
+  text-align: left;
+}
 
-    .info-value {
-      color: white;
-      font-weight: regular;
-      font-size: 30px; /* Większa czcionka dla wartości */
-    }
+.info-label {
+  color: #76deff;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px; /* Odstęp między etykietą a wartością */
+}
 
-    .progress-chart-container {
-      width: 250px; /* Zmniejszona szerokość wykresu kołowego */
-      position: relative;
-    }
+.info-value {
+  color: white;
+  font-weight: regular;
+  font-size: 30px; /* Większa czcionka dla wartości */
+}
 
-    .table-container {
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0);
-      border-radius: 10px;
-      padding: 20px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      max-height: 400px;
-      overflow-y: auto;
-    }
+.progress-chart-container {
+  width: 190px;
+  position: absolute; /* Zmieniamy na pozycję absolutną */
+  right: 0px; /* Ustawiamy odległość od prawego marginesu */
+  top: 50%; /* Ustawiamy na środku w pionie */
+  transform: translateY(-50%); /* Przesuwamy o połowę wysokości w górę */
+}
 
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
+.table-container {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.007); /* Białe tło z przezroczystością 3% */
+  border-radius: 20px; /* Zaokrąglone rogi */
+  padding: 20px; /* Dodaj padding, aby zawartość nie dotykała krawędzi */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
 
-    td {
-      padding: 0px 5px;
-      color: #76deff;
-      border: none;
-      line-height: 2.2;
-      text-align: left;
-      position: relative;
-    }
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed; /* Dodajemy stały układ tabeli */
+}
 
-    .delete-button {
-      background: none;
-      border: none;
-      color: #e43a78;
-      font-size: 10px;
-      cursor: pointer;
-    }
+td, th {
+  padding: 0px 5px;
+  color: #76deff;
+  border: none;
+  line-height: 2.2;
+  text-align: left;
+  position: relative;
+  white-space: normal; /* Zawijanie tekstu */
+  font-size: 10px; /* Dodajemy rozmiar czcionki */
+}
 
-    .positive {
-      color: #80f7ff;
-    }
+td:first-child, th:first-child {
+  width: 5%; /* Szerokość pierwszej kolumny */
+}
 
-    .negative {
-      color: #e43a78;
-    }
+td:nth-child(2), th:nth-child(2) {
+  width: 17%; /* Szerokość drugiej kolumny */
+}
 
-    .table-container::-webkit-scrollbar {
-      width: 8px;
-    }
+td:nth-child(3), th:nth-child(3) {
+  width: 20%; /* Szerokość trzeciej kolumny */
+}
 
-    .table-container::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-    }
+td:nth-child(4), th:nth-child(4) {
+  width: 20%; /* Szerokość czwartej kolumny */
+}
 
-    .table-container::-webkit-scrollbar-thumb {
-      background: #5ebee8;
-      border-radius: 4px;
-    }
+td:nth-child(5), th:nth-child(5) {
+  width: 20%; /* Szerokość piątej kolumny */
+}
 
-    .table-container::-webkit-scrollbar-thumb:hover {
-      background: #8ddcff;
-    }
+td:nth-child(6), th:nth-child(6) {
+  width: 15%; /* Szerokość szóstej kolumny */
+}
 
-    input[type="number"] {
-      margin: 5px;
-      padding: 8px;
-      font-size: 16px;
-      border: none;
-      border-radius: 50px;
-      background-color: white;
-      color: black;
-    }
+.delete-button {
+  background: none;
+  border: none;
+  color: #e43a78;
+  font-size: 10px;
+  cursor: pointer;
+}
 
-    button {
-      margin: 5px;
-      padding: 8px 16px;
-      font-size: 16px;
-      font-family: 'Roboto', sans-serif;
-      background-color: #80f7ff;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-    }
+.positive {
+  color: #80f7ff;
+}
 
-    .golden-text {
-      text-shadow: 0 0 15px #80f7ff8c; /* Efekt glow dla najlepszego wyniku */
-    }
+.negative {
+  color: #e43a78;
+}
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
+.table-container::-webkit-scrollbar {
+  width: 8px;
+}
 
-    @keyframes slideUp {
-      from {
-        transform: translateY(5px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
+.table-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
 
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
+.table-container::-webkit-scrollbar-thumb {
+  background: #5ebee8;
+  border-radius: 4px;
+}
 
-    .slide-up {
-      animation: slideUp 0.5s ease-in-out;
-    }
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #8ddcff;
+}
+
+input[type="number"] {
+  margin: 5px;
+  padding: 8px;
+  font-size: 16px;
+  border: none;
+  border-radius: 50px;
+  background-color: white;
+  color: black;
+  width: 120px; /* Stała szerokość pola wprowadzania */
+}
+
+button {
+  margin: 5px;
+  padding: 8px 16px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  background-color: #80f7ff;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  width: auto; /* Szerokość przycisku dopasowana do tekstu */
+}
+
+.golden-text {
+  text-shadow: 0 0 15px #80f7ff8c; /* Efekt glow dla najlepszego wyniku */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(5px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-in-out;
+}
   </style>
 </head>
 <body>
@@ -259,7 +302,7 @@
     
     <!-- Sekcja wprowadzania dystansu -->
     <div class="input-section">
-      <input type="number" id="distanceInput" placeholder="Dodaj dystans (km)" step="0.1" />
+      <input type="number" id="distanceInput" placeholder="Dystans" step="0.1" />
       <button onclick="addDistance()">Dodaj</button>
     </div>
   </div>
@@ -338,56 +381,74 @@
     gradient.addColorStop(0.8, '#e43a78');
 
     const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [], // Etykiety będą numerami wpisów (1, 2, 3, …)
-        datasets: [
-          {
-            label: 'Dystans (km)',
-            data: [],
-            fill: false,
-            borderColor: gradient,
-            borderWidth: 2,
-            tension: 0.3,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { color: '#897abb' },
-          },
-          y: {
-            grid: {
-              color: (context) => {
-                const baseRGB = '137,122,187';
-                const values = context.chart.data.datasets[0].data;
-                const minValue = Math.min(...values); // Minimalna wartość na wykresie
-                const maxValue = Math.max(...values); // Maksymalna wartość na wykresie
-                const y = (context.tick.value - minValue) / (maxValue - minValue); // Normalizacja wartości do zakresu 0-1
-                const alpha = (1 - y).toFixed(2); // Odwrócenie gradientu (100% na dole, 0% na górze)
-                return `rgba(${baseRGB}, ${alpha})`;
-              },
-            },
-            ticks: { color: '#897abb' },
-            min: (ctx) => {
-              const values = ctx.chart.data.datasets[0].data;
-              return Math.min(...values); // Ustawienie minimalnej wartości na najniższy rekord
-            },
-            max: (ctx) => {
-              const values = ctx.chart.data.datasets[0].data;
-              return Math.max(...values); // Ustawienie maksymalnej wartości na najwyższy rekord
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            display: false, // Usunięcie legendy
-          },
+  type: 'line',
+  data: {
+    labels: [], // Etykiety będą numerami wpisów (1, 2, 3, …)
+    datasets: [
+      {
+        label: 'Dystans (km)',
+        data: [],
+        fill: true, // Włącz wypełnienie pod linią
+        borderColor: gradient,
+        borderWidth: 2,
+        tension: 0.3,
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) {
+            return null;
+          }
+
+          const gradientFill = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+          gradientFill.addColorStop(0, 'rgba(108, 214, 254, 0)'); // 0% opacity na dole
+          gradientFill.addColorStop(1, 'rgba(108, 214, 254, 0.4)'); // 100% opacity na górze
+
+          return gradientFill;
         },
       },
-    });
+    ],
+  },
+  options: {
+    animation: {
+      duration: 1000, // Czas trwania animacji w milisekundach
+      easing: 'easeInOutQuad', // Efekt animacji
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#897abb' },
+      },
+      y: {
+        grid: {
+          color: (context) => {
+            const baseRGB = '137,122,187';
+            const values = context.chart.data.datasets[0].data;
+            const minValue = Math.min(...values); // Minimalna wartość na wykresie
+            const maxValue = Math.max(...values); // Maksymalna wartość na wykresie
+            const y = (context.tick.value - minValue) / (maxValue - minValue); // Normalizacja wartości do zakresu 0-1
+            const alpha = (1 - y).toFixed(2); // Odwrócenie gradientu (100% na dole, 0% na górze)
+            return `rgba(${baseRGB}, ${alpha})`;
+          },
+        },
+        ticks: { color: '#897abb' },
+        min: (ctx) => {
+          const values = ctx.chart.data.datasets[0].data;
+          return Math.min(...values); // Ustawienie minimalnej wartości na najniższy rekord
+        },
+        max: (ctx) => {
+          const values = ctx.chart.data.datasets[0].data;
+          return Math.max(...values); // Ustawienie maksymalnej wartości na najwyższy rekord
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Usunięcie legendy
+      },
+    },
+  },
+});
 
     // Wykres kołowy
     const progressCanvas = document.getElementById('progressChart');
