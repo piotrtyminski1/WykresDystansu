@@ -22,54 +22,26 @@
   
   <style>
   /* Reset marginesów HTML i BODY */
-  html, body {
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  text-transform: uppercase;
   overflow: hidden; /* Zapobiega przewijaniu poza granice strony */
 }
 
 body {
-  position: relative; /* Wymagane do pozycjonowania pseudo-elementów */
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
   background: linear-gradient(180deg, #255992, #1e174d) no-repeat;
   background-size: cover;
-  background-attachment: fixed;
+  background-attachment: fixed; /* Tło pozostaje w miejscu podczas scrollowania */
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  margin: 0;
-  overflow: hidden; /* Zapobiega przewijaniu poza granice strony */
 }
-
-/* Pseudo-element dla górnego rozszerzenia tła */
-body::before {
-  content: '';
-  position: fixed; /* Upewnij się, że pseudo-element jest zawsze widoczny */
-  top: -100vh; /* Rozciągnij poza górną krawędź */
-  left: 0;
-  width: 100%;
-  height: 100vh; /* Wysokość równa jednej wysokości widoku */
-  background: #255992; /* Kolor górnej części gradientu */
-  z-index: -1; /* Upewnij się, że jest pod zawartością */
-}
-
-/* Pseudo-element dla dolnego rozszerzenia tła */
-body::after {
-  content: '';
-  position: fixed; /* Upewnij się, że pseudo-element jest zawsze widoczny */
-  bottom: -100vh; /* Rozciągnij poza dolną krawędź */
-  left: 0;
-  width: 100%;
-  height: 100vh; /* Wysokość równa jednej wysokości widoku */
-  background: #1e174d; /* Kolor dolnej części gradientu */
-  z-index: -1; /* Upewnij się, że jest pod zawartością */
-}
-
-
 
 .input-container {
   display: flex;
@@ -103,10 +75,8 @@ dotlottie-player {
   gap: 20px;
   width: 100%;
   max-width: 800px;
-  overflow-y: auto; /* Włącz przewijanie tylko wewnątrz kontenera */
-  height: calc(100vh - 40px); /* Dostosuj wysokość do widocznego obszaru */
-  padding: 0px; /* Dodaj padding, aby zawartość nie dotykała krawędzi */
-  box-sizing: border-box;
+  overflow-y: auto; /* Umożliwia przewijanie zawartości */
+  max-height: 100vh; /* Zapobiega wychodzeniu poza ekran */
 }
 
 .chart-container {
