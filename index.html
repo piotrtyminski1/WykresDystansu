@@ -28,6 +28,7 @@ html, body {
   height: 100%;
   text-transform: uppercase;
   overflow: hidden; /* Zapobiega przewijaniu poza granice strony */
+  background-color: #255992; /* Kolor górnej części gradientu */
 }
 
 body {
@@ -41,6 +42,17 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50vh; /* Dodatkowa przestrzeń dla dolnej części */
+  background-color: #1e174d; /* Kolor dolnej części gradientu */
+  z-index: -1;
 }
 
 .input-container {
